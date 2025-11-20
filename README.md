@@ -1,5 +1,7 @@
 # Neon Defense: Titan Slayer
 
+[![PLAY DEMO](https://img.shields.io/badge/🎮_PLAY_DEMO-CLICK_HERE-90ee90?style=for-the-badge&logo=github&logoColor=black&labelColor=101020)](https://pentarix1996.github.io/neon-defense/)
+
 ![Version](https://img.shields.io/badge/version-1.0.0-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Status](https://img.shields.io/badge/status-stable-brightgreen)
