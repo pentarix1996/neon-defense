@@ -1,112 +1,180 @@
-function drawBaseVisuals(canvasId, level) {
-    const cvs = document.getElementById(canvasId);
-    if (!cvs) return;
-    const c = cvs.getContext('2d');
+/**
+ * Base Visuals Manager.
+ * Handles the rendering of the holographic core in the upgrade menu.
+ */
+class BaseVisualsManager {
     
-    const w = cvs.width;
-    const h = cvs.height;
-    const centerX = w / 2;
-    const centerY = h / 2;
-    const t = Date.now() * 0.001;
-
-    // Background: Digital Grid
-    c.fillStyle = '#050510';
-    c.fillRect(0, 0, w, h);
-    
-    c.strokeStyle = 'rgba(0, 243, 255, 0.1)';
-    c.lineWidth = 1;
-    for(let i=0; i<w; i+=40) { c.beginPath(); c.moveTo(i,0); c.lineTo(i,h); c.stroke(); }
-    for(let i=0; i<h; i+=40) { c.beginPath(); c.moveTo(0,i); c.lineTo(w,i); c.stroke(); }
-
-    // HOLOGRAM EFFECT
-    c.save();
-    c.translate(centerX, centerY);
-
-    // Core Base (Changes with level)
-    const pulse = 1 + Math.sin(t * 2) * 0.05;
-    
-    // Level 0: Unstable Core (Red/Glitchy)
-    if (level === 0) {
-        c.shadowBlur = 20; c.shadowColor = '#ff0055';
-        c.fillStyle = '#300';
-        c.beginPath(); c.arc(0, 0, 40 * pulse, 0, Math.PI*2); c.fill();
+    /**
+     * Main entry point to draw the base visuals.
+     * Uses requestAnimationFrame for continuous animation.
+     * @param {string} canvasId - The ID of the canvas element.
+     * @param {number} level - The current level of the base (0-4).
+     */
+    static draw(canvasId, level) {
+        const canvas = document.getElementById(canvasId);
+        if (!canvas) return;
         
-        c.strokeStyle = '#ff0055'; c.lineWidth = 2;
-        for(let i=0; i<3; i++) {
-            c.beginPath(); 
-            c.arc(0, 0, 50 + (i*10), t + i, t + i + 1.5); 
-            c.stroke();
-        }
-        c.fillStyle = '#fff';
-        c.font = '12px monospace';
-        c.fillText("SYSTEM CRITICAL", -50, 80);
-    }
+        const ctx = canvas.getContext('2d');
+        const width = canvas.width;
+        const height = canvas.height;
+        const centerX = width / 2;
+        const centerY = height / 2;
+        const time = Date.now() * 0.001; // Global time for animation
 
-    // Level 1: Stabilized (Blue)
-    if (level >= 1) {
-        c.shadowBlur = 25; c.shadowColor = '#00f3ff';
-        c.fillStyle = '#00f3ff';
-        // Hexagon Core
-        c.beginPath();
-        for (let i = 0; i < 6; i++) {
-            c.lineTo(50 * Math.cos(i * Math.PI / 3), 50 * Math.sin(i * Math.PI / 3));
-        }
-        c.closePath(); c.fill();
+        // 1. Draw Background (Digital Grid)
+        ctx.fillStyle = '#050510';
+        ctx.fillRect(0, 0, width, height);
         
-        // Rotating Ring 1
-        c.rotate(t * 0.5);
-        c.strokeStyle = 'rgba(0, 243, 255, 0.5)'; c.lineWidth = 4;
-        c.beginPath(); c.arc(0, 0, 70, 0, Math.PI*1.5); c.stroke();
-        c.rotate(-t * 0.5); // Undo rotate
-    }
-
-    // Level 2: Advanced (Green/Tech)
-    if (level >= 2) {
-        c.rotate(-t * 0.8);
-        c.strokeStyle = '#00ff66'; c.lineWidth = 2;
-        c.beginPath(); c.rect(-90, -90, 180, 180); c.stroke();
-        // 4 Satellites
-        for(let i=0; i<4; i++) {
-            c.fillStyle = '#00ff66';
-            c.fillRect(85, -5, 10, 10);
-            c.rotate(Math.PI/2);
+        ctx.strokeStyle = 'rgba(0, 243, 255, 0.1)';
+        ctx.lineWidth = 1;
+        
+        // Vertical lines
+        for (let i = 0; i < width; i += 40) {
+            ctx.beginPath(); 
+            ctx.moveTo(i, 0); 
+            ctx.lineTo(i, height); 
+            ctx.stroke();
         }
-        c.rotate(t * 0.8); // Undo
-    }
-
-    // Level 3: Citadel (Purple/Power)
-    if (level >= 3) {
-        c.rotate(t * 0.2);
-        c.shadowColor = '#bd00ff'; c.shadowBlur = 40;
-        c.strokeStyle = '#bd00ff'; c.lineWidth = 6;
-        c.beginPath(); c.arc(0, 0, 130, 0, Math.PI*2); c.stroke();
-        // Orbiting nodes
-        const orbitals = 3;
-        for(let i=0; i<orbitals; i++) {
-            const ang = (i * (Math.PI*2/orbitals));
-            c.fillStyle = '#fff';
-            c.beginPath(); c.arc(Math.cos(ang)*130, Math.sin(ang)*130, 8, 0, Math.PI*2); c.fill();
+        
+        // Horizontal lines
+        for (let i = 0; i < height; i += 40) {
+            ctx.beginPath(); 
+            ctx.moveTo(0, i); 
+            ctx.lineTo(width, i); 
+            ctx.stroke();
         }
-        c.rotate(-t * 0.2);
-    }
 
-    // Level 4: Command (Gold/Ultimate)
-    if (level >= 4) {
-        c.shadowColor = '#ffcc00'; c.shadowBlur = 60;
-        c.strokeStyle = 'rgba(255, 204, 0, 0.3)'; c.lineWidth = 2;
-        // Grid Sphere
-        c.beginPath(); c.arc(0, 0, 180, 0, Math.PI*2); c.stroke();
-        c.setLineDash([10, 10]);
-        c.beginPath(); c.arc(0, 0, 170, 0, Math.PI*2); c.stroke();
-        c.setLineDash([]);
-    }
+        // 2. Hologram Effect Setup
+        ctx.save();
+        ctx.translate(centerX, centerY);
 
-    c.restore();
-    
-    // Redraw loop
-    requestAnimationFrame(() => {
+        const pulse = 1 + Math.sin(time * 2) * 0.05;
+
+        // --- LEVEL 0: RUINS (Red/Unstable) ---
+        if (level === 0) {
+            ctx.shadowBlur = 20; 
+            ctx.shadowColor = '#ff0055';
+            ctx.fillStyle = '#300';
+            
+            ctx.beginPath(); 
+            ctx.arc(0, 0, 40 * pulse, 0, Math.PI * 2); 
+            ctx.fill();
+            
+            ctx.strokeStyle = '#ff0055'; 
+            ctx.lineWidth = 2;
+            
+            // Rotating broken rings
+            for (let i = 0; i < 3; i++) {
+                ctx.beginPath(); 
+                ctx.arc(0, 0, 50 + (i * 10), time + i, time + i + 1.5); 
+                ctx.stroke();
+            }
+            
+            ctx.fillStyle = '#fff';
+            ctx.font = '12px monospace';
+            ctx.fillText("SYSTEM CRITICAL", -50, 80);
+        }
+
+        // --- LEVEL 1: OUTPOST (Blue/Stable) ---
+        if (level >= 1) {
+            ctx.shadowBlur = 25; 
+            ctx.shadowColor = '#00f3ff';
+            ctx.fillStyle = '#00f3ff';
+            
+            // Hexagon Core
+            ctx.beginPath();
+            for (let i = 0; i < 6; i++) {
+                ctx.lineTo(50 * Math.cos(i * Math.PI / 3), 50 * Math.sin(i * Math.PI / 3));
+            }
+            ctx.closePath(); 
+            ctx.fill();
+            
+            // Rotating Ring
+            ctx.rotate(time * 0.5);
+            ctx.strokeStyle = 'rgba(0, 243, 255, 0.5)'; 
+            ctx.lineWidth = 4;
+            ctx.beginPath(); 
+            ctx.arc(0, 0, 70, 0, Math.PI * 1.5); 
+            ctx.stroke();
+            ctx.rotate(-time * 0.5); // Reset rotation
+        }
+
+        // --- LEVEL 2: FORTRESS (Green/Tech) ---
+        if (level >= 2) {
+            ctx.rotate(-time * 0.8);
+            ctx.strokeStyle = '#00ff66'; 
+            ctx.lineWidth = 2;
+            
+            // Square border
+            ctx.beginPath(); 
+            ctx.rect(-90, -90, 180, 180); 
+            ctx.stroke();
+            
+            // 4 Satellites
+            for (let i = 0; i < 4; i++) {
+                ctx.fillStyle = '#00ff66';
+                ctx.fillRect(85, -5, 10, 10);
+                ctx.rotate(Math.PI / 2);
+            }
+            ctx.rotate(time * 0.8); // Reset
+        }
+
+        // --- LEVEL 3: CITADEL (Purple/Power) ---
+        if (level >= 3) {
+            ctx.rotate(time * 0.2);
+            ctx.shadowColor = '#bd00ff'; 
+            ctx.shadowBlur = 40;
+            ctx.strokeStyle = '#bd00ff'; 
+            ctx.lineWidth = 6;
+            
+            // Outer Ring
+            ctx.beginPath(); 
+            ctx.arc(0, 0, 130, 0, Math.PI * 2); 
+            ctx.stroke();
+            
+            // Orbiting nodes
+            const orbitals = 3;
+            for (let i = 0; i < orbitals; i++) {
+                const ang = (i * (Math.PI * 2 / orbitals));
+                ctx.fillStyle = '#fff';
+                ctx.beginPath(); 
+                ctx.arc(Math.cos(ang) * 130, Math.sin(ang) * 130, 8, 0, Math.PI * 2); 
+                ctx.fill();
+            }
+            ctx.rotate(-time * 0.2);
+        }
+
+        // --- LEVEL 4: COMMAND CENTER (Gold/Ultimate) ---
+        if (level >= 4) {
+            ctx.shadowColor = '#ffcc00'; 
+            ctx.shadowBlur = 60;
+            ctx.strokeStyle = 'rgba(255, 204, 0, 0.3)'; 
+            ctx.lineWidth = 2;
+            
+            // Grid Sphere Effect
+            ctx.beginPath(); 
+            ctx.arc(0, 0, 180, 0, Math.PI * 2); 
+            ctx.stroke();
+            
+            ctx.setLineDash([10, 10]);
+            ctx.beginPath(); 
+            ctx.arc(0, 0, 170, 0, Math.PI * 2); 
+            ctx.stroke();
+            ctx.setLineDash([]);
+        }
+
+        ctx.restore();
+        
+        // Loop Animation if the menu is visible
+        // Using 'BaseVisualsManager.draw' explicitly to maintain context
         if (document.getElementById('base-menu').style.display === 'flex') {
-            drawBaseVisuals(canvasId, level);
+            requestAnimationFrame(() => BaseVisualsManager.draw(canvasId, level));
         }
-    });
+    }
+}
+
+// Expose global helper to maintain compatibility with existing onclick events in HTML if necessary
+// or simply used by the Game class.
+function drawBaseVisuals(canvasId, level) {
+    BaseVisualsManager.draw(canvasId, level);
 }
