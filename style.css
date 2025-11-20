@@ -1,0 +1,146 @@
+/* ... existing styles ... */
+
+/* Boss Health Bar */
+#boss-bar-container {
+    position: absolute;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 500px;
+    z-index: 20;
+    text-align: center;
+}
+#boss-name {
+    color: var(--danger);
+    font-weight: bold;
+    letter-spacing: 3px;
+    font-size: 1.2rem;
+    margin-bottom: 5px;
+    text-shadow: 0 0 5px #000;
+}
+.boss-health-bg {
+    width: 100%;
+    height: 20px;
+    background: #220000;
+    border: 2px solid var(--danger);
+    border-radius: 4px;
+    overflow: hidden;
+}
+#boss-health-fill {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, #ff0000, #ff6600);
+    transition: width 0.2s;
+    box-shadow: 0 0 10px var(--danger);
+}
+
+/* Update Upgrade Panel Height */
+#upgrade-panel {
+    /* ... existing ... */
+    height: auto;
+    min-height: 220px;
+}
+
+/* ... rest of existing styles ... */
+
+/* Basic Resets/Variables repeated for context completeness if needed */
+:root {
+    --bg-color: #050510;
+    --ui-bg: rgba(10, 15, 30, 0.95);
+    --accent: #00f3ff;
+    --danger: #ff0055;
+    --warning: #ffcc00;
+    --success: #00ff66;
+    --purple: #bd00ff;
+    --white: #ffffff;
+    --orange: #ff6600;
+    --rail: #00ffaa;
+    --orbit: #ff00cc;
+    --font-main: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+body, html { margin: 0; padding: 0; width: 100%; height: 100%; background-color: #000; overflow: hidden; font-family: var(--font-main); color: white; user-select: none; display: flex; justify-content: center; align-items: center; }
+#game-container { position: relative; width: 1280px; height: 720px; background-color: var(--bg-color); overflow: hidden; box-shadow: 0 0 50px rgba(0, 243, 255, 0.1); }
+#gameCanvas { display: block; width: 100%; height: 100%; }
+#crt-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06)); background-size: 100% 2px, 3px 100%; pointer-events: none; z-index: 999; box-shadow: inset 0 0 80px rgba(0,0,0,0.5); }
+#ui-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; display: none; flex-direction: column; justify-content: space-between; z-index: 10; }
+.hud-top { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent); pointer-events: auto; }
+.stat-group { display: flex; gap: 20px; align-items: center; }
+.stat-box { font-size: 1.2rem; font-weight: bold; letter-spacing: 1px; text-shadow: 0 0 5px black; }
+.btn-icon { background: var(--ui-bg); border: 1px solid var(--accent); color: var(--accent); width: 40px; height: 40px; border-radius: 5px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-left: 10px; transition: 0.2s; }
+.btn-icon:hover { background: var(--accent); color: #000; }
+.btn-speed { background: var(--ui-bg); border: 1px solid var(--accent); color: var(--accent); padding: 5px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+.btn-speed.active { background: var(--accent); color: #000; box-shadow: 0 0 15px var(--accent); }
+#combo-meter { position: absolute; top: 100px; right: 30px; text-align: right; transition: transform 0.1s; display: none; pointer-events: none; }
+#combo-val { font-size: 4rem; font-weight: 900; color: var(--warning); text-shadow: 0 0 20px var(--danger); margin: 0; line-height: 1; font-family: 'Arial Black', sans-serif; font-style: italic; }
+#combo-label { font-size: 1rem; color: #fff; letter-spacing: 4px; font-weight: bold; text-shadow: 0 0 5px #000; }
+.combo-pop { animation: pop 0.15s ease-out; }
+@keyframes pop { 0% { transform: scale(1); } 50% { transform: scale(1.3); } 100% { transform: scale(1); } }
+.modal-panel { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 300px; background: var(--ui-bg); border: 2px solid var(--accent); border-radius: 10px; padding: 20px; display: none; pointer-events: auto; text-align: center; box-shadow: 0 0 30px rgba(0,0,0,0.9); z-index: 200; }
+.modal-panel h3 { margin-top: 0; color: var(--accent); border-bottom: 1px solid #333; padding-bottom: 10px; }
+.setting-row { margin-bottom: 15px; text-align: left; }
+.setting-row label { display: block; margin-bottom: 5px; color: #ccc; font-size: 0.9rem; }
+input[type=range] { width: 100%; accent-color: var(--accent); }
+.menu-btn { width: 100%; padding: 10px; margin-top: 10px; background: transparent; border: 1px solid #555; color: #fff; cursor: pointer; font-weight: bold; transition: 0.2s; }
+.menu-btn:hover { background: var(--accent); color: #000; }
+.menu-btn.disabled { opacity: 0.5; cursor: not-allowed; border-color: #333; color: #555; }
+#tooltip { position: absolute; bottom: 110px; left: 50%; transform: translateX(-50%); background: rgba(5, 10, 20, 0.98); border: 1px solid var(--accent); padding: 15px; border-radius: 8px; pointer-events: none; display: none; width: 280px; text-align: left; z-index: 50; box-shadow: 0 0 25px rgba(0, 243, 255, 0.2); backdrop-filter: blur(10px); }
+#tooltip h4 { margin: 0 0 8px 0; color: var(--accent); text-transform: uppercase; display:flex; justify-content:space-between; font-size: 1.1rem; border-bottom: 1px solid #333; padding-bottom: 5px; }
+#tooltip p { margin: 5px 0; font-size: 0.85rem; color: #ddd; line-height: 1.4; }
+#tooltip .stats { font-size: 0.8rem; color: #aaa; display: flex; justify-content: space-between; margin-top: 10px; background: rgba(255,255,255,0.05); padding: 5px; border-radius: 4px; }
+.tt-cost { color: var(--warning); }
+.tt-locked { color: var(--danger); font-weight: bold; text-align: center; display: block; margin-top: 5px; border: 1px solid var(--danger); padding: 2px; background: rgba(255,0,0,0.1); }
+.hud-bottom { padding: 10px; pointer-events: auto; display: flex; justify-content: center; gap: 6px; background: linear-gradient(to top, rgba(0,0,0,0.95), transparent); align-items: flex-end; flex-wrap: wrap; position: relative; }
+.tower-btn { background: var(--ui-bg); border: 2px solid #333; color: #fff; padding: 6px; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; display: flex; flex-direction: column; align-items: center; width: 60px; position: relative; backdrop-filter: blur(5px); }
+.tower-btn:hover { transform: translateY(-5px); border-color: var(--accent); }
+.tower-btn.selected { border-color: var(--success); box-shadow: 0 0 15px var(--success); background: rgba(0, 255, 102, 0.1); }
+.tower-btn.disabled { opacity: 0.5; filter: grayscale(1); cursor: not-allowed; }
+.tower-btn.locked { opacity: 0.3; border-color: #444; cursor: not-allowed; filter: grayscale(1); }
+.lock-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 1.5rem; z-index: 2; text-shadow: 0 0 5px black; }
+.tower-icon { width: 24px; height: 24px; margin-bottom: 4px; border-radius: 50%; border: 2px solid white; }
+.tower-info { font-size: 0.65rem; text-align: center; line-height: 1.1; }
+.tower-cost { color: var(--warning); font-weight: bold; }
+.key-hint { position: absolute; top: 1px; right: 2px; font-size: 0.6rem; color: #888; }
+#upgrade-panel { position: absolute; right: 20px; bottom: 140px; width: 220px; background: var(--ui-bg); border: 1px solid var(--accent); border-radius: 10px; padding: 15px; pointer-events: auto; display: none; box-shadow: 0 0 20px rgba(0, 243, 255, 0.2); backdrop-filter: blur(10px); }
+.panel-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #444; padding-bottom: 5px; margin-bottom: 10px; }
+.panel-header h3 { margin: 0; color: var(--accent); font-size: 1.1rem; }
+.btn-close-panel { background: none; border: none; color: #888; font-size: 1.2rem; cursor: pointer; }
+.btn-close-panel:hover { color: #fff; }
+.upgrade-stats-grid { margin-bottom: 15px; font-size: 0.9rem; }
+.up-row { display: flex; justify-content: space-between; margin-bottom: 5px; color: #ccc; }
+.up-row .val { color: #fff; font-weight: bold; }
+.panel-actions { display: flex; gap: 10px; }
+.btn-action { flex: 1; padding: 10px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.2s; color: #000; }
+.btn-upgrade { background: var(--success); }
+.btn-upgrade:hover { box-shadow: 0 0 15px var(--success); filter: brightness(1.1); }
+.btn-sell { background: var(--danger); color: white; }
+.btn-sell:hover { box-shadow: 0 0 15px var(--danger); filter: brightness(1.1); }
+.overlay-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 5, 16, 0.98); display: flex; flex-direction: column; justify-content: center; align-items: center; pointer-events: auto; z-index: 100; }
+h1 { font-size: 3rem; margin: 0; color: var(--accent); text-transform: uppercase; letter-spacing: 5px; text-shadow: 0 0 20px var(--accent); text-align: center; }
+h2 { color: var(--white); font-weight: normal; margin-bottom: 30px; font-size: 1.2rem; opacity: 0.8; }
+.level-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 20px; max-width: 900px; width: 100%; padding: 20px; }
+.level-card { border: 2px solid #333; border-radius: 10px; padding: 20px; text-align: center; cursor: pointer; background: rgba(255,255,255,0.05); transition: 0.3s; position: relative; overflow: hidden; }
+.level-card:hover:not(.locked) { border-color: var(--accent); box-shadow: 0 0 20px rgba(0,243,255,0.2); transform: scale(1.05); }
+.level-card.infinite { border-color: var(--purple); }
+.level-card.infinite:hover { border-color: var(--purple); box-shadow: 0 0 20px var(--purple); }
+.level-card.locked { opacity: 0.4; cursor: not-allowed; }
+.btn-main { background: transparent; border: 2px solid var(--accent); color: var(--accent); padding: 10px 30px; font-size: 1.2rem; margin-top: 20px; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
+.btn-main:hover { background: var(--accent); color: #000; }
+#base-manager-layout { display: flex; flex-direction: row; width: 90%; max-width: 1000px; height: 600px; background: rgba(10, 20, 40, 0.8); border: 2px solid var(--accent); border-radius: 20px; overflow: hidden; }
+.base-left { flex: 1; background: #000; position: relative; border-right: 2px solid var(--accent); }
+.base-right { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+.upgrade-card { background: rgba(255,255,255,0.05); border: 1px solid #444; padding: 15px; display: flex; justify-content: space-between; align-items: center; border-radius: 8px; }
+.upgrade-card.active { border-color: var(--success); box-shadow: inset 0 0 15px rgba(0,255,100,0.1); }
+.upgrade-card.unaffordable { border-color: var(--danger); opacity: 0.7; }
+.upgrade-card.affordable { border-color: var(--accent); }
+.upgrade-card.purchased { border-color: var(--success); opacity: 0.5; }
+.upgrade-info h4 { margin: 0 0 5px 0; color: var(--white); }
+.upgrade-info p { margin: 0; font-size: 0.8rem; color: #aaa; }
+.btn-buy-base { background: var(--success); color: #000; border: none; padding: 10px 20px; font-weight: bold; cursor: pointer; border-radius: 4px; }
+.btn-buy-base:disabled { opacity: 0.3; cursor: not-allowed; background: #555; color: #aaa; }
+.coin-display { font-size: 2rem; color: var(--warning); font-weight: bold; text-align: center; margin-bottom: 10px; text-shadow: 0 0 10px #000; }
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 100%; max-width: 500px; margin: 20px 0; text-align: left; }
+.stat-item { border-bottom: 1px solid #333; padding: 10px; font-size: 1.2rem; display: flex; justify-content: space-between; }
+.stat-val { color: var(--accent); font-weight: bold; }
+.toast { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); font-size: 2.5rem; color: var(--warning); text-shadow: 0 0 15px black; pointer-events: none; animation: fadeUp 2.5s forwards; font-weight: bold; z-index: 99; }
+@keyframes fadeUp { 0% { opacity: 0; transform: translate(-50%, 0); } 15% { opacity: 1; transform: translate(-50%, -50%); } 100% { opacity: 0; transform: translate(-50%, -100px); } }
