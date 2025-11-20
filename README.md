@@ -20,7 +20,7 @@ This project requires no build dependencies (no webpack/babel) to run in its bas
 
 1.  **Clone the repository:**
     ```bash
-    git clone [https://github.com/pentarix1996/neon-defense.git](https://github.com/pentarix1996/neon-defense.git)
+    git clone https://github.com/pentarix1996/neon-defense.git
     cd neon-defense
     ```
 
@@ -35,7 +35,7 @@ This project requires no build dependencies (no webpack/babel) to run in its bas
 ## 🕹️ Controls
 
 - **Mouse**: Select towers, build, and navigate menus.
-- **Keys 1-9**: Quick hotkeys for tower selection.
+- **Keys 1-0**: Quick hotkeys for tower selection.
 - **ESC**: Cancel selection / Pause game.
 
 ## 🛠️ Technologies
